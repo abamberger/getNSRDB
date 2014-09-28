@@ -8,6 +8,7 @@ import multiprocessing
 
 def setupdb(DATABASE):
 	"""
+	This Must be run before running insert
 	Run this to set up your NSRDB database. There is no harm in running this more than once
 	input database should be in the format:
 	DATABASE = {'database': 'mynsrdb', 'user': 'tesla'}
@@ -107,16 +108,16 @@ def download(folder, i = None, threads = None, geos = None):
 	"""
 	Downloads the data files
 	Folder is the only required fields. Defines the working folder to download the data files to
-	i is if you would liek to download every ith data point. Defaults to 1
+	i is if you would like to download every ith data point. Defaults to 1
 	threads defaults to 1. It is highly suggested to use a value around 8 for speed
-	geos defaults to all of the US and Canada
+	geos defaults to all of the Lower 48 and Hawaii
 
     Geos format
-    geos = [{ 'n': 41.00,   # * required
+    geos = { 'n': 41.00,   # * required
             's': 39.00,   # * required
             'e': -99.00,  # * required
             'w': -101.00, # * required
-        }]
+        }
 
 	example usage : NSRDB.download(folder = '/datawork/tmp', i = 3, threads = 8, geos = geos)
 
@@ -137,16 +138,11 @@ def download(folder, i = None, threads = None, geos = None):
 	else:
 		geobounds = parsegeos(geos)
 
-	#round to the nearest numer whoa last digit is 5
+	#round to the nearest numer whose last digit is 5
 	latmin = 5 * (ceil(((floor(geobounds[0]/5.0)+1)/2))*2-1)
 	latmax = 5 * (ceil(((floor(geobounds[1]/5.0)+1)/2))*2-1)
 	lonmin = 5 * (ceil(((floor(geobounds[2]/5.0)+1)/2))*2-1)
 	lonmax = 5 * (ceil(((floor(geobounds[3]/5.0)+1)/2))*2-1)
-
-	print latmin
-	print lonmin
-	print latmax
-	print lonmax
 
 	def getdl(t):
 		while not q.empty():
@@ -297,11 +293,12 @@ def vacuumfull(table):
 
 if __name__ == "__main__":
 	DATABASE = {'database': 'weather', 'user': 'alex'}
-	folder = '/datawork/tmp/nsrdb2/'
+	folder = '/datawork/tmp/nsrdb/'
 	geos = { 'n': 41.00,
             's': 39.00,
             'e': -99.00,
             'w': -101.00
 	        }
+	setupdb(DATABASE)
 	download(folder = folder, i = 3, threads = 8, geos = geos)
 	

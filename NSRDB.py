@@ -1,9 +1,12 @@
+#built in libraries
 import urllib
 from os import system, listdir
-import psycopg2
-import csv
-import progressbar
 from math import ceil, floor
+import csv
+
+#third party libraries
+import psycopg2
+import progressbar
 import multiprocessing
 
 def setupdb(DATABASE):
@@ -212,7 +215,13 @@ def parsegeos(geos):
 
 def insert(DATABASE, folder):
     """
-
+    Insets the data to your database
+    Make sure the folder only has NSRDB files (& no folders) in it otherwise it will error
+    Without modification, progressbar will only show steps of 1/100 of progress. It may
+    take a while for 1/100 of the import to complete and show progress.
+    To change, simply edit line 302 in __init__.py in the progressbar module:
+    change: self.num_intervals = max(100, self.term_width)
+    to: self.num_intervals = max({put interval here}, self.term_width)
     """
     global con
     global cur
@@ -306,11 +315,11 @@ def vacuum(table):
 if __name__ == "__main__":
     DATABASE = {'database': 'weather', 'user': 'alex'}
     folder = '/datawork/tmp/nsrdb/'
-    """geos = { 'n': 41.00,
-            's': 39.00,
-            'e': -99.00,
-            'w': -101.00
-            }"""
+    geos = { 'n': 41.00,
+            's': 37.00,
+            'e': -102.00,
+            'w': -109.00
+            } #Colorado
     setupdb(DATABASE)
-    #download(folder = folder, i = 4, threads = 8)
+    download(folder = folder, i = 8, threads = 8)
     insert(DATABASE,folder)
